@@ -1,4 +1,5 @@
 import pandas as pd
+from collections import Counter
 
 df = pd.read_csv('buscas.csv')
 X_df = df[['home', 'busca', 'logado']]
@@ -9,9 +10,9 @@ Ydummies_df = Y_df
 X = Xdummies_df.values
 Y = Ydummies_df.values
 
-acerto_de_um = len(Y[Y=='sim'])
-acerto_de_zero = len(X[Y=='nao'])
-taxa_de_acerto_base = 100.0 * max(acerto_de_um, acerto_de_zero) / len(Y)
+acerto_base = max(Counter(Y).values())
+
+taxa_de_acerto_base = 100.0 * acerto_base / len(Y)
 print("Taxa de acerto base: %f" % (taxa_de_acerto_base))
 
 porcentagem_treino = 0.9
@@ -38,6 +39,6 @@ total_de_elementos = len(teste_dados)
 
 taxa_de_acerto = 100.0 * total_de_acertos / total_de_elementos
  
-print(taxa_de_acerto)
+print("Taxa de acerto do algoritmo: %f" % (taxa_de_acerto))
 print(total_de_elementos)
 
