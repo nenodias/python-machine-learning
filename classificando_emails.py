@@ -42,48 +42,46 @@ treino_marcacoes = Y[0:tamanho_de_treino]
 validacao_dados = X[tamanho_de_treino:]
 validacao_marcacoes = Y[tamanho_de_treino:]
 
-def fit_and_predict(nome, modelo, treino_dados, treino_marcacoes):
+def fit_and_predict(modelo, treino_dados, treino_marcacoes):
 	k = 10
 	scores = cross_val_score(modelo, treino_dados, treino_marcacoes, cv = k)
 	taxa_de_acerto = np.mean(scores)
+	nome = modelo.__class__.__name__
 	msg = "Taxa de acerto do {0}: {1}".format(nome, taxa_de_acerto)
 	print(msg)
 	return taxa_de_acerto
 
 def teste_real(modelo, validacao_dados, validacao_marcacoes):
-	resultado = modelo.predict(validacao_dados)
+    resultado = modelo.predict(validacao_dados)
+    acertos = resultado == validacao_marcacoes
 
-	acertos = resultado == validacao_marcacoes
-
-	total_de_acertos = sum(acertos)
-	total_de_elementos = len(validacao_marcacoes)
-
-	taxa_de_acerto = 100.0 * total_de_acertos / total_de_elementos
-
-	msg = "Taxa de acerto do vencedor entre os dois algoritmos no mundo real: {0}".format(taxa_de_acerto)
-	print(msg)
+    total_de_acertos = sum(acertos)
+    total_de_elementos = len(validacao_marcacoes)
+    taxa_de_acerto = 100.0 * total_de_acertos / total_de_elementos
+    name = modelo.__class__.__name__
+    print("Taxa de acerto do algoritmo ({0}) vencedor no mundo real: {1}".format(name, taxa_de_acerto))
 
 resultados = {}
 
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import LinearSVC
 modeloOneVsRest = OneVsRestClassifier(LinearSVC(random_state = 0))
-resultadoOneVsRest = fit_and_predict("OneVsRest", modeloOneVsRest, treino_dados, treino_marcacoes)
+resultadoOneVsRest = fit_and_predict(modeloOneVsRest, treino_dados, treino_marcacoes)
 resultados[resultadoOneVsRest] = modeloOneVsRest
 
 from sklearn.multiclass import OneVsOneClassifier
 modeloOneVsOne = OneVsOneClassifier(LinearSVC(random_state = 0))
-resultadoOneVsOne = fit_and_predict("OneVsOne", modeloOneVsOne, treino_dados, treino_marcacoes)
+resultadoOneVsOne = fit_and_predict(modeloOneVsOne, treino_dados, treino_marcacoes)
 resultados[resultadoOneVsOne] = modeloOneVsOne
 
 from sklearn.naive_bayes import MultinomialNB
 modeloMultinomial = MultinomialNB()
-resultadoMultinomial = fit_and_predict("MultinomialNB", modeloMultinomial, treino_dados, treino_marcacoes)
+resultadoMultinomial = fit_and_predict(modeloMultinomial, treino_dados, treino_marcacoes)
 resultados[resultadoMultinomial] = modeloMultinomial
 
 from sklearn.ensemble import AdaBoostClassifier
 modeloAdaBoost = AdaBoostClassifier(random_state=0)
-resultadoAdaBoost = fit_and_predict("AdaBoostClassifier", modeloAdaBoost, treino_dados, treino_marcacoes)
+resultadoAdaBoost = fit_and_predict(modeloAdaBoost, treino_dados, treino_marcacoes)
 resultados[resultadoAdaBoost] = modeloAdaBoost
 
 print(resultados)
