@@ -2,6 +2,8 @@ import pandas as pd
 from collections import Counter
 import numpy as np
 from sklearn.model_selection import cross_val_score
+import nltk
+stopwords = nltk.corpus.stopwords.words('portuguese')
 
 def vetorizar_texto(texto, tradutor):
 	vetor = [0] * len(tradutor)
@@ -19,7 +21,8 @@ textosQuebrados = textosPuros.str.lower().str.split(' ')
 dicionario = set()
 
 for lista in textosQuebrados:
-	dicionario.update(lista)
+	validas = [palavra for palavra in lista if palavra not in stopwords]
+	dicionario.update(validas)
 
 totalDePalavras = len(dicionario)
 tuplas = zip(dicionario, range(totalDePalavras))
